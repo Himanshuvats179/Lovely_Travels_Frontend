@@ -1,0 +1,24 @@
+.hotel-search-container {
+  display: flex;
+  gap: 10px;
+}
+
+.hotel-search-container input {
+  padding: 12px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.search-btn {
+  background: #ff3f6c;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background: #e93560;
+}
