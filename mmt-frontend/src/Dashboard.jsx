@@ -46,13 +46,99 @@ const trendingDestinations = [
 
 function Dashboard() {
   const navigate = useNavigate();
-  const [activeService, setActiveService] = useState("Hotels"); // Hotels | Cabs
+
+  // ================================
+  // STATE MANAGEMENT FOR BOOKING UI
+  // ================================
+  const [activeService, setActiveService] = useState("Hotels");
   const [location, setLocation] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState("2 Guests");
   const [rooms, setRooms] = useState("1 Room");
 
+  // =============================
+  // LOGOUT FUNCTION
+  // =============================
+  // const handleLogout = async () => {
+  //   const accessToken = localStorage.getItem("accessToken");
+
+  //   // If no token, just clear everything
+  //   if (!accessToken) {
+  //     localStorage.clear();
+  //     sessionStorage.clear();
+  //     navigate("/login");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Sending access token to backend logout API
+  //     await fetch("http://localhost:8080/user/logout", {
+  //       method: "POST",
+  //       headers: {
+  //         "Authorization": `Bearer ${accessToken}`
+  //       }
+  //     });
+  //   } catch (err) {
+  //     console.log("Logout request failed (Ignoring...)", err);
+  //   }
+
+  //   // Remove all tokens from frontend
+  //   localStorage.removeItem("accessToken");
+  //   localStorage.removeItem("refreshToken");
+  //   localStorage.removeItem("userId");
+  //   sessionStorage.clear();
+
+  //   // Redirect user to login
+  //   navigate("/login");
+  // };
+
+  // // =============================
+  // // NAVIGATION SECTIONS
+  // // =============================
+  // const handleNavClick = (link) => {
+  //   if (link === "Home") navigate("/");
+  //   if (link === "Bookings") navigate("/bookings");
+  //   if (link === "Support") navigate("/support");
+  // };
+
+
+const handleLogout = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  try {
+    if (accessToken) {
+      await fetch("http://localhost:8080/user/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
+  } catch (err) {
+    console.log("Logout request failed (ignored)", err);
+  }
+
+  // clear frontend state
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // 🔥 IMPORTANT FIX
+  window.location.replace("/");
+};
+
+
+
+
+
+
+
+
+
+
+  // =============================
+  // SEARCH HANDLER FOR HOTELS / CABS
+  // =============================
   const handleSearch = () => {
     if (activeService === "Hotels") {
       navigate("/hotels", {
@@ -65,24 +151,24 @@ function Dashboard() {
     }
   };
 
-  const handleNavClick = (link) => {
-    if (link === "Home") navigate("/");
-    if (link === "Bookings") navigate("/bookings");
-    if (link === "Support") navigate("/support");
-  };
-
   return (
     <div className="app-root">
-      {/* Left Sidebar */}
+
+      {/* ================================
+          LEFT SIDEBAR
+         ================================ */}
       <aside className="sidebar">
+
+        {/* LOGO SECTION */}
         <div className="sidebar-logo">
           <div className="logo-icon">H</div>
           <div className="logo-text">
-            <span className="logo-title">HotelLink</span>
-            <span className="logo-subtitle">Stay &amp; Ride</span>
+            <span className="logo-title">Lovely Travels</span>
+            <span className="logo-subtitle"></span>
           </div>
         </div>
 
+        {/* MAIN SIDEBAR LINKS */}
         <div className="sidebar-section">
           <p className="sidebar-section-title">User Dashboard</p>
 
@@ -107,6 +193,7 @@ function Dashboard() {
           </button>
         </div>
 
+        {/* OWNER SECTION */}
         <div className="sidebar-section">
           <p className="sidebar-section-title">Owner Panel</p>
 
@@ -125,9 +212,11 @@ function Dashboard() {
           </button>
         </div>
 
+        {/* FOOTER HELP SECTION */}
         <div className="sidebar-footer">
           <p className="sidebar-footer-title">Need Help?</p>
           <p className="sidebar-footer-text">24x7 support available</p>
+
           <button
             className="sidebar-help-btn"
             onClick={() => navigate("/support")}
@@ -137,17 +226,21 @@ function Dashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* ================================
+          MAIN AREA (RIGHT SIDE)
+         ================================ */}
       <div className="main-area">
-        {/* Top Bar */}
+
+        {/* TOP BAR */}
         <header className="topbar">
+
+          {/* TOPBAR NAV BUTTONS */}
           <nav className="topbar-left">
+          
             {navLinks.map((link) => (
               <button
                 key={link}
-                className={`topbar-link ${
-                  link === "Home" ? "topbar-link-active" : ""
-                }`}
+                className={`topbar-link ${link === "Home" ? "topbar-link-active" : ""}`}
                 onClick={() => handleNavClick(link)}
               >
                 {link}
@@ -155,43 +248,52 @@ function Dashboard() {
             ))}
           </nav>
 
+          {/* USER INFO + LOGOUT BUTTON */}
           <div className="topbar-right">
             <div className="user-info">
               <div className="user-avatar">J</div>
               <div>
-                <p className="user-name">John Smith</p>
+                <p className="user-name">User</p>
                 <p className="user-subtitle">Gold Member</p>
               </div>
             </div>
-            <button className="topbar-btn ghost">Logout</button>
+
+            {/* LOGOUT BUTTON ATTACHED HERE */}
+            <button className="topbar-btn ghost" onClick={handleLogout}>
+              Logout
+            </button>
+
             <button className="topbar-btn primary">Register</button>
           </div>
         </header>
 
-        {/* Content */}
+        {/* ================================
+            MAIN CONTENT AREA
+           ================================ */}
         <main className="content">
-          {/* Booking Card + Why Us */}
+
+          {/* BOOKING CARD SECTION */}
           <section className="booking-row">
             <div className="booking-card">
+
+              {/* CARD HEADER */}
               <div className="booking-card-header">
                 <h2 className="booking-title">Book Your Stay or Ride</h2>
                 <p className="booking-subtitle">
-                  Find the best {activeService.toLowerCase()} at exclusive
-                  prices.
+                  Find the best {activeService.toLowerCase()} at exclusive prices.
                 </p>
+
+                {/* SWITCH TABS BETWEEN HOTELS/CABS */}
                 <div className="booking-toggle">
                   <button
-                    className={`toggle-pill ${
-                      activeService === "Hotels" ? "active" : ""
-                    }`}
+                    className={`toggle-pill ${activeService === "Hotels" ? "active" : ""}`}
                     onClick={() => setActiveService("Hotels")}
                   >
                     Hotels
                   </button>
+
                   <button
-                    className={`toggle-pill ${
-                      activeService === "Cabs" ? "active" : ""
-                    }`}
+                    className={`toggle-pill ${activeService === "Cabs" ? "active" : ""}`}
                     onClick={() => setActiveService("Cabs")}
                   >
                     Cabs
@@ -199,7 +301,10 @@ function Dashboard() {
                 </div>
               </div>
 
+              {/* BOOKING FORM */}
               <div className="booking-form">
+
+                {/* FIRST ROW */}
                 <div className="form-row">
                   <div className="form-field">
                     <label>Location</label>
@@ -236,13 +341,12 @@ function Dashboard() {
                   )}
                 </div>
 
+                {/* SECOND ROW */}
                 <div className="form-row">
+
                   <div className="form-field">
                     <label>Guests</label>
-                    <select
-                      value={guests}
-                      onChange={(e) => setGuests(e.target.value)}
-                    >
+                    <select value={guests} onChange={(e) => setGuests(e.target.value)}>
                       <option>1 Guest</option>
                       <option>2 Guests</option>
                       <option>3 Guests</option>
@@ -253,10 +357,7 @@ function Dashboard() {
                   {activeService === "Hotels" && (
                     <div className="form-field">
                       <label>Rooms</label>
-                      <select
-                        value={rooms}
-                        onChange={(e) => setRooms(e.target.value)}
-                      >
+                      <select value={rooms} onChange={(e) => setRooms(e.target.value)}>
                         <option>1 Room</option>
                         <option>2 Rooms</option>
                         <option>3 Rooms</option>
@@ -266,63 +367,59 @@ function Dashboard() {
 
                   <div className="form-field form-field-button">
                     <button className="search-btn" onClick={handleSearch}>
-                      {activeService === "Hotels"
-                        ? "Search Hotels"
-                        : "Search Cabs"}
+                      {activeService === "Hotels" ? "Search Hotels" : "Search Cabs"}
                     </button>
                   </div>
+
                 </div>
               </div>
             </div>
 
-            {/* Why Book With Us */}
+            {/* WHY BOOK WITH US SECTION */}
             <aside className="why-card">
               <h3>Why book with us?</h3>
               <ul className="why-list">
+
                 <li>
                   <span className="why-icon">💸</span>
                   <div>
                     <p className="why-title">Best Prices Guaranteed</p>
-                    <p className="why-text">
-                      Get exclusive app-only deals and offers.
-                    </p>
+                    <p className="why-text">Get exclusive app-only deals and offers.</p>
                   </div>
                 </li>
+
                 <li>
                   <span className="why-icon">✅</span>
                   <div>
                     <p className="why-title">Verified Stays</p>
-                    <p className="why-text">
-                      Every property is quality checked before listing.
-                    </p>
+                    <p className="why-text">Every property is quality checked before listing.</p>
                   </div>
                 </li>
+
                 <li>
                   <span className="why-icon">🕐</span>
                   <div>
                     <p className="why-title">24x7 Support</p>
-                    <p className="why-text">
-                      We’re here for you anytime, anywhere.
-                    </p>
+                    <p className="why-text">We’re here for you anytime, anywhere.</p>
                   </div>
                 </li>
+
               </ul>
             </aside>
           </section>
 
-          {/* Trending Section */}
+          {/* TRENDING DESTINATIONS */}
           <section className="trending-section">
             <div className="trending-head">
+
               <div>
                 <h3 className="trending-title">Trending Destinations</h3>
                 <p className="trending-subtitle">
                   Popular places people are booking right now.
                 </p>
               </div>
-              <button
-                className="view-all-btn"
-                onClick={() => navigate("/hotels")}
-              >
+
+              <button className="view-all-btn" onClick={() => navigate("/hotels")}>
                 View all
               </button>
             </div>
@@ -330,6 +427,7 @@ function Dashboard() {
             <div className="trending-list">
               {trendingDestinations.map((item) => (
                 <article key={item.id} className="destination-card">
+
                   <div className="destination-image-wrapper">
                     <img
                       src={item.image}
@@ -338,16 +436,20 @@ function Dashboard() {
                     />
                     <span className="destination-badge">TOP PICK</span>
                   </div>
+
                   <div className="destination-content">
                     <div className="destination-text">
                       <p className="destination-city">{item.city}</p>
                       <p className="destination-country">{item.country}</p>
                     </div>
+
                     <p className="destination-tag">{item.tag}</p>
+
                     <div className="destination-footer">
                       <p className="destination-price">
                         From <span>{item.price}</span> / night
                       </p>
+
                       <button
                         className="small-btn"
                         onClick={() => navigate(`/book/${item.id}`)}
@@ -355,22 +457,29 @@ function Dashboard() {
                         Book
                       </button>
                     </div>
+
                   </div>
                 </article>
               ))}
             </div>
           </section>
 
-          {/* Footer */}
+          {/* FOOTER */}
           <footer className="footer">
             <button className="footer-link">About Us</button>
             <button className="footer-link">Terms &amp; Conditions</button>
             <button className="footer-link">Privacy Policy</button>
           </footer>
+
         </main>
+
       </div>
     </div>
   );
 }
 
 export default Dashboard;
+
+
+
+

@@ -6,7 +6,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import bgImage from "./assets/Lovely_tavel.login.png";
 
 export default function LoginPage() {
-  const [mode, setMode] = useState(null); 
+  const [mode, setMode] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -88,6 +88,8 @@ export default function LoginPage() {
       } else {
         localStorage.setItem("accessToken", data.jwtToken);
         localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("userName", data.fullName || "User");
+        localStorage.setItem("userId",data.userId)
         window.location.href = "/dashboard";
       }
     } catch (err) {
@@ -114,7 +116,8 @@ export default function LoginPage() {
         { method: "POST" }
       );
 
-      const data = await res.json();
+    const data = await res.json();
+
 
       if (!data.success) {
         setError(data.message || "Failed to send OTP.");
@@ -129,31 +132,38 @@ export default function LoginPage() {
   };
 
   const verifyPhoneOtp = async () => {
-    setError("");
-    setLoading(true);
+  setError("");
+  setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:8080/auth/phone/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ otpToken: phoneToken, otp: phoneOtp }),
-      });
+  try {
+    const res = await fetch("http://localhost:8080/auth/phone/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        otpToken: phoneToken,
+        otp: phoneOtp
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!data.jwtToken) {
-        setError(data.message || "Incorrect OTP.");
-      } else {
-        localStorage.setItem("accessToken", data.jwtToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        window.location.href = "/dashboard";
-      }
-    } catch (err) {
-      setError("Server error.");
+    // ✅ CHECK + SAVE SAME KEY
+    if (!data.accessToken) {
+      setError(data.message || "Incorrect OTP.");
+    } else {
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("userId", data.userId);
+
+      window.location.href = "/dashboard";
     }
 
+  } catch (err) {
+    setError("Server error.");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   // ================= RESET =================
   const goBack = () => {
@@ -285,3 +295,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+

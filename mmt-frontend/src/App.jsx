@@ -157,8 +157,9 @@ export default function App() {
           }
         />
 
-        {/* UNKNOWN ROUTES */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* UNKNOWN ROUTES 
+        //<Route path="*" element={<Navigate to="/" replace />} />
+       // <Route path="/admin/users" element={<AdminUsers/>}/>*/}
 
       </Routes>
     </Router>
